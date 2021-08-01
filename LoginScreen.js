@@ -1,10 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TextInput, Button, TouchableOpacity } from 'react-native';
 
-const LoginScreen = () => {
+const LoginScreen = (props) => {
 
     const loginButtonPressed = () => {
         console.log("Login button pressed");
+        props.navigation.navigate("HomeScreen")
+
     }
 
     const signUpButtonPressed = () => {
