@@ -6,6 +6,10 @@ import {createStackNavigator} from '@react-navigation/stack';
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen';
 import ForgotPasswordScreen from './ForgotPasswordScreen';
+import HomeScreen from './HomeScreen';
+import SearchGeoCache from './SearchGeoCache';
+import FavScreen from './Fav';
+import AddGeoCache from './AddGeoCache';
 
 
 export default function App() {
@@ -18,6 +22,10 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen}/>
         <Stack.Screen name="Register" component={RegisterScreen}/>
         <Stack.Screen name="Forgot Password" component={ForgotPasswordScreen}/>
+        <Stack.Screen name="Search Geo Cache" component={SearchGeoCache}/>
+        <Stack.Screen name="Favorites" component={FavScreen}/>
+        <Stack.Screen name="Add New Geo Cache" component={AddGeoCache}/>
+        <Stack.Screen name="HomeScreen" component={HomeScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
