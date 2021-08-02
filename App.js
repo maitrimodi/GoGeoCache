@@ -3,13 +3,13 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import LoginScreen from './LoginScreen';
-import RegisterScreen from './RegisterScreen';
-import ForgotPasswordScreen from './ForgotPasswordScreen';
-import HomeScreen from './HomeScreen';
+import LoginScreen from './Views/LoginScreen';
+import RegisterScreen from './Views/RegisterScreen';
+import ForgotPasswordScreen from './Views/ForgotPasswordScreen';
+import HomeScreen from './Views/HomeScreen';
 import SearchGeoCache from './SearchGeoCache';
 import FavScreen from './Fav';
-import AddGeoCache from './AddGeoCache';
+import AddGeoCache from './Views/AddGeoCacheScreen';
 
 
 export default function App() {
