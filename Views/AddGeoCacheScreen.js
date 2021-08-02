@@ -31,11 +31,22 @@ const AddGeoCache = () => {
                     alert("Invalid Longitude")
                     return
                 }
-                if(!validate(description.trim(), "cashDetails")) {
+                if(!validate(description.trim(), "cacheDetails")) {
                     alert("Invalid Details")
                     return
                 }
-
+                AddGeoCacheFirebase({
+                    latitude: latitude,
+                    longitude: longitude,
+                    description: description
+                }).then((added) => {
+                    if(added) {
+                        setLatitude("")
+                        setLongitude("")
+                        setDescription("")
+                        alert("Data Added!")
+                    }
+                })
             }}></Button>
         </View>
     );
