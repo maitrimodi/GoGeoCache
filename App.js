@@ -7,7 +7,7 @@ import LoginScreen from './Views/LoginScreen';
 import RegisterScreen from './Views/RegisterScreen';
 import ForgotPasswordScreen from './Views/ForgotPasswordScreen';
 import HomeScreen from './Views/HomeScreen';
-import SearchGeoCache from './SearchGeoCache';
+import ListGeoCacheScreen from './Views/ListGeoCacheScreen';
 import FavScreen from './Fav';
 import AddGeoCache from './Views/AddGeoCacheScreen';
 
@@ -22,7 +22,7 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen}/>
         <Stack.Screen name="Register" component={RegisterScreen}/>
         <Stack.Screen name="Forgot Password" component={ForgotPasswordScreen}/>
-        <Stack.Screen name="Search Geo Cache" component={SearchGeoCache}/>
+        <Stack.Screen name="List Geo Cache" component={ListGeoCacheScreen}/>
         <Stack.Screen name="Favorites" component={FavScreen}/>
         <Stack.Screen name="Add New Geo Cache" component={AddGeoCache}/>
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>

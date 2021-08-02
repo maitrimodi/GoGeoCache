@@ -17,3 +17,15 @@ export const AddGeoCacheFirebase = (data) => {
         )
     })
 }
+
+export const fetchCacheList = () => {
+    return new Promise((resolve) => {
+        let cacheArray = []
+        db.collection("GeoCache").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                cacheArray.push(doc.data());
+            });
+            resolve(cacheArray);
+        });
+    });
+}

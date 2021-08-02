@@ -5,11 +5,16 @@ import { db } from "./../Services/FirebaseManager";
 import { AddGeoCacheFirebase } from "./../Services/FirebaseService";
 
 const AddGeoCache = () => {
+    const [cacheName, setCacheName] = useState("")
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
     const [description, setDescription] = useState("")
     return(
         <View style={{padding: 10}}>
+             <TextInput
+                placeholder="Enter cache name"
+                value={cacheName}
+                onChangeText={(data)=>{setCacheName(data)}}/>
             <TextInput
                 placeholder="Enter latitude"
                 value={latitude}
@@ -23,6 +28,10 @@ const AddGeoCache = () => {
                 value={description}
                 onChangeText={(data)=>{setDescription(data)}}/>
             <Button title="Add Cash" onPress={()=> {
+                if(!validate(cacheName, "cacheName")){
+                    alert("Invalid Cache Name")
+                    return
+                }
                 if(!validate(latitude, "latLng")) {
                     alert("Invalid Latitude")
                     return
@@ -36,11 +45,13 @@ const AddGeoCache = () => {
                     return
                 }
                 AddGeoCacheFirebase({
+                    cacheName: cacheName,
                     latitude: latitude,
                     longitude: longitude,
                     description: description
                 }).then((added) => {
                     if(added) {
+                        setCacheName("")
                         setLatitude("")
                         setLongitude("")
                         setDescription("")

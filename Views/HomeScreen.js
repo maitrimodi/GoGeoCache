@@ -7,7 +7,7 @@ const HomeScreen = (props) => {
 
     const searchGeoPressed = () => {
         console.log("Login button pressed");
-        props.navigation.navigate("Search Geo Cache")
+        props.navigation.navigate("List Geo Cache")
     }
 
     const addGeoPressed = () => {
