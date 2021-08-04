@@ -17,26 +17,53 @@ const ListGeoCacheScreen = () => {
     const [cacheStatus, setCacheStatus] = useState("");
     const [note, setNote] = useState("");
     const [notes, setNotes] = useState([]);
-    const [favSelected, setFavSelected] = useState();
+    const [favSelected, setFavSelected] = useState("");
     // a variable to programitically access the MapView element
     const mapRef = useRef(null)
   
-
+    /**
+     * {
+        *  "maitri@gmail.com": {
+        *   //status : // values
+        *   complete: ["Star Bazar", "New york"],
+        *   progress: ["Star India Bazar"],
+        *   favourite: ["Star India Bazar", "New York"],
+        * }
+     * }
+     *  */ 
     const startButtonPressed = (status) => {
         console.log("Start progress button clicked", cacheDetails);
         setCacheStatus("In Progress");
         getAsyncData().then((data)=>{
             let dataObj = data
+            // if there's no data it will get initialized
             if(!dataObj)
                 dataObj = {}
+            // dataObj["progress"] = []
             dataObj[status] = dataObj[status] ? dataObj[status] : []
-            if(dataObj[status].indexOf(cacheDetails.cacheName)==-1)
+
+            // if it's not in array it will get added
+            // dataObj["progress"] = ["Star Bazar"]
+            if(dataObj[status].indexOf(cacheDetails.cacheName)===-1)
                 dataObj[status].push(cacheDetails.cacheName)
-            saveAsyncData(dataObj)
+
+            // gets stored in local storage
+            saveAsyncData(dataObj).then(()=> {
+                let tempObj = {...cacheDetails}
+                if(status == "favourite") {
+                    tempObj.isFavourite = true
+                } else {
+                    tempObj.cacheStatus = status === "progress" ? "In Progress" : "Complete"
+                }
+                
+                setCacheDetails(tempObj)
+                updateCacheList(cacheList)
+            })
             console.log("data from dataObj");
             console.log(dataObj);
         })
     }
+
 
     const addNotesButtonPressed  = () => {
         console.log("Add note", note);
@@ -108,45 +135,51 @@ const ListGeoCacheScreen = () => {
     const [cacheDetails, setCacheDetails] = useState();
     useEffect(()=>{
         fetchCacheList().then((data) => {
-
-            let myArr = [... data]
-            getAsyncData().then((asyncData)=>{
-                let dataObj = asyncData
-                console.log("DataObj",dataObj)
-                if(!dataObj)
-                    dataObj = {}
-                for(let i=0; i< myArr.length; i++) {
-                    if(dataObj["complete"] && dataObj["complete"].indexOf(myArr[i].cacheName)!=-1)
-                        myArr[i].cacheStatus = "Complete"
-                    else if(dataObj["progress"] && dataObj["progress"].indexOf(myArr[i].cacheName)!=-1)
-                        myArr[i].cacheStatus = "In Progress"
-                    else
-                        myArr[i].cacheStatus = ""
-                }
-                setCacheList(myArr)
-                console.log("Data maitri");
-                console.log(myArr);
-            })
+            updateCacheList(data)
         })
         buttonPressed()
     }, [])
+
+    const updateCacheList = (data) => {
+        let myArr = [... data]
+        getAsyncData().then((asyncData)=>{
+            let dataObj = asyncData
+            console.log("DataObj",dataObj)
+            if(!dataObj)
+                dataObj = {}
+            for(let i=0; i< myArr.length; i++) {
+                if(dataObj["complete"] && dataObj["complete"].indexOf(myArr[i].cacheName)!=-1)
+                    myArr[i].cacheStatus = "Complete"
+                else if(dataObj["progress"] && dataObj["progress"].indexOf(myArr[i].cacheName)!=-1)
+                    myArr[i].cacheStatus = "In Progress"
+                else
+                    myArr[i].cacheStatus = ""
+                if(dataObj["favourite"] && dataObj["favourite"].indexOf(myArr[i].cacheName)!=-1)
+                    myArr[i].isFavourite = true
+            }
+            setCacheList(myArr)
+            console.log(myArr);
+        })
+    }
    
     return (
         <>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height: "50%" }}>
-        {currRegion && <MapView
+        {currRegion && 
+        <MapView
           style={{width:Dimensions.get("window").width, height:"100%"}}
           initialRegion={currRegion}
           ref={mapRef}
         >
             {
-                cacheList.map((_, index) => (
+                cacheList.map((_,index) => (
                     <Marker coordinate={{latitude: parseFloat(_.latitude), longitude: parseFloat(_.longitude)}}
                         title={_.cacheName}
                         description={_.cacheDetails} onPress={()=> {
                             setCacheDetails(_);
                             setButtomSheetIsOpen(true)
-                        }}></Marker>
+                        }}>
+                    </Marker>
                 ))
             }
         </MapView> }
@@ -179,15 +212,14 @@ const ListGeoCacheScreen = () => {
                                 <Text  style={styles.listText}>{`${_.cacheName}`}</Text>
                             </TouchableOpacity>
                             <View style={styles.rightContainer}>
-                                <TouchableOpacity>
+                                {_.isFavourite && <TouchableOpacity>
                                     <Image source={require("./../assets/fav.png")} style={styles.logo}/>
-                                </TouchableOpacity>
+                                </TouchableOpacity>}
                                 
                                 <View style={[styles.badge, _.cacheStatus === "In Progress" ? styles.progressBadge: (_.cacheStatus === "Complete" ? styles.completeBadge : {}) ]}>
                                     <Text style={[_.cacheStatus === "In Progress" ? styles.blackText : (_.cacheStatus === "Complete" ? styles.whiteText : {})]}>{_.cacheStatus}</Text>
                                 </View>
                             </View>
-                            
                         </View>
                     ))}
                 </ScrollView>
@@ -219,9 +251,10 @@ const ListGeoCacheScreen = () => {
             </View>
             
             <View style={styles.detailsButtons}>
-                <TouchableOpacity style={styles.detailsButton} onPress={favButtonPressed}>
+                {!cacheDetails.isFavourite && <TouchableOpacity style={styles.detailsButton} onPress={() => {startButtonPressed("favourite")}}>
                     <Text style={styles.whiteText}>Add to favourite</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>}
+                {cacheDetails.isFavourite && <Text>Favourited</Text>}
                 {
                     console.log(cacheDetails.cacheStatus)
                 }

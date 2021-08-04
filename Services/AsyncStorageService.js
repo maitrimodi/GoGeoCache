@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const saveAsyncData = (data) => {
+  return new Promise((resolve)=>{
     getUser().then((dataStore)=> {
         AsyncStorage.setItem(dataStore, JSON.stringify(data))
         .then(
@@ -8,14 +9,18 @@ export const saveAsyncData = (data) => {
           // if .setItem succeeds? ==> the data was correctly stored to the storage
           () => {
             console.log("["+dataStore+"] Save was successful.");
+            resolve(true)
           }
         ).catch(
           (error) => {
             console.log("Error occurred when saving a primitive");
             console.log(error);
+            resolve(false)
           }
         );
     });
+  })
+   
 }
 
 export const setUser = (user) => {
