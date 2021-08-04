@@ -42,11 +42,6 @@ const HomeScreen = ({navigation, route}) => {
                 <Image source={require("./../assets/addGeoCache.png")} style={styles.logo}/>
             </TouchableOpacity>
             <Text style={styles.title}>Add a New Cache</Text>
-
-            <TouchableOpacity onPress={favGeoPressed}>
-                <Image source={require("./../assets/fav.png")} style={styles.logo}/>
-            </TouchableOpacity>
-            <Text style={styles.title}>Favorites</Text>
         </View>
     );
 }

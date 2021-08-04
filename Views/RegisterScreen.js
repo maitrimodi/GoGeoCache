@@ -177,8 +177,7 @@ const RegisterScreen = (props) => {
 const styles = StyleSheet.create({
     caption:{
         fontSize: 20,
-        textAlign:'center',
-        fontFamily:"Arial"
+        textAlign:'center'
     },
     container: {
       backgroundColor: 'white',

@@ -1,5 +1,5 @@
 import React , {useState, useEffect, useRef} from 'react';
-import { Text, View, Button, Dimensions, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, Button, Dimensions, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import {saveAsyncData, getAsyncData} from './../Services/AsyncStorageService';
 
 // location library imports
@@ -17,14 +17,10 @@ const ListGeoCacheScreen = () => {
     const [cacheStatus, setCacheStatus] = useState("");
     const [note, setNote] = useState("");
     const [notes, setNotes] = useState([]);
+    const [favSelected, setFavSelected] = useState();
     // a variable to programitically access the MapView element
     const mapRef = useRef(null)
   
-    // const mapMoved = (data) => {
-    //   console.log(data)
-    //   // OPTIONAL: you can update th e state variable and do something with the updated region info later
-    //   setCurrRegion(data)
-    // }
 
     const startButtonPressed = (status) => {
         console.log("Start progress button clicked", cacheDetails);
@@ -143,7 +139,6 @@ const ListGeoCacheScreen = () => {
         {currRegion && <MapView
           style={{width:Dimensions.get("window").width, height:"100%"}}
           initialRegion={currRegion}
-        //   onRegionChangeComplete={mapMoved}
           ref={mapRef}
         >
             {
@@ -154,23 +149,6 @@ const ListGeoCacheScreen = () => {
                             setCacheDetails(_);
                             setButtomSheetIsOpen(true)
                         }}></Marker>
-                    // <View key={`${index}`} style={styles.listItem}>
-                    //     <TouchableOpacity onPress={()=> {
-                    //         console.log(_)
-                    //         setCacheDetails(_);
-                    //     }}>
-                    //         <Text  style={styles.listText}>{`${_.cacheName}`}</Text>
-                    //     </TouchableOpacity>
-                    //     <View style={styles.rightContainer}>
-                    //         <TouchableOpacity>
-                    //             <Text>Fav</Text>
-                    //         </TouchableOpacity>
-                    //         <View style={[styles.badge, styles.progressBadge]}>
-                    //             <Text style={styles.whiteText}>In-Progress</Text>
-                    //         </View>
-                    //     </View>
-                        
-                    // </View>
                 ))
             }
         </MapView> }
@@ -204,7 +182,7 @@ const ListGeoCacheScreen = () => {
                             </TouchableOpacity>
                             <View style={styles.rightContainer}>
                                 <TouchableOpacity>
-                                    <Text>Fav</Text>
+                                    <Image source={require("./../assets/fav.png")} style={styles.logo}/>
                                 </TouchableOpacity>
                                 
                                 <View style={[styles.badge, _.cacheStatus === "In Progress" ? styles.progressBadge: (_.cacheStatus === "Complete" ? styles.completeBadge : {}) ]}>
@@ -224,7 +202,7 @@ const ListGeoCacheScreen = () => {
                     console.log("close")
                     setCacheDetails(undefined);
                 }}>
-                    <Text>Close</Text>
+                    <Image source={require("./../assets/cancel.png")} style={styles.logo}/>
                 </TouchableOpacity>
             </View>
             <Text style={styles.detailsDetails}>{cacheDetails.description}</Text>
@@ -243,7 +221,7 @@ const ListGeoCacheScreen = () => {
             </View>
             
             <View style={styles.detailsButtons}>
-                <TouchableOpacity style={styles.detailsButton}>
+                <TouchableOpacity style={styles.detailsButton} onPress={favButtonPressed}>
                     <Text style={styles.whiteText}>Add to favourite</Text>
                 </TouchableOpacity>
                 {cacheDetails.cacheStatus == "" && <TouchableOpacity style={styles.detailsButton} onPress={()=>{startButtonPressed("progress")}}>
@@ -271,8 +249,7 @@ const ListGeoCacheScreen = () => {
     closeIcon:{
         // position: "absolute",
         right: 20,
-        backgroundColor: "red",
-        padding: 10
+        padding: 10,
     },
     titleText: {
         fontSize: 15,
@@ -332,6 +309,10 @@ const ListGeoCacheScreen = () => {
         color: "white",
         padding: 10,
         borderRadius: 5
+    },
+    logo:{
+        height:20,
+        width: 20
     }
   }
 

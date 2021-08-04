@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
 import { validate } from "./../Services/Validation";
-import { db } from "./../Services/FirebaseManager";
 import { AddGeoCacheFirebase } from "./../Services/FirebaseService";
 
 const AddGeoCache = () => {
@@ -10,7 +9,7 @@ const AddGeoCache = () => {
     const [longitude, setLongitude] = useState("")
     const [description, setDescription] = useState("")
     return(
-        <View style={{padding: 10}}>
+        <View style={styles.box}>
              <TextInput
                 placeholder="Enter cache name"
                 value={cacheName}
@@ -27,7 +26,7 @@ const AddGeoCache = () => {
                 placeholder="Enter details"
                 value={description}
                 onChangeText={(data)=>{setDescription(data)}}/>
-            <Button title="Add Cash" onPress={()=> {
+            <Button title="Add New Cache" onPress={()=> {
                 if(!validate(cacheName, "cacheName")){
                     alert("Invalid Cache Name")
                     return
@@ -62,5 +61,18 @@ const AddGeoCache = () => {
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    box:{
+        borderWidth:1,
+        borderRadius:5,
+        paddingLeft:5,
+        paddingRight:5,
+        paddingTop:50,
+        marginBottom:20,
+        borderColor: 'rgb(30, 138, 93)'
+    }
+    
+});
 
 export default AddGeoCache;
