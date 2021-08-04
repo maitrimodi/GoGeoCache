@@ -1,21 +1,100 @@
-import React from 'react';
+import React, {useState} from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, Button, TouchableOpacity } from 'react-native';
-
+import { GetUser } from "./../Services/FirebaseService";
+import {setUser} from "./../Services/AsyncStorageService"
 const LoginScreen = (props) => {
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [userData, setUserData] = useState([]);
+    const [noUserMsg, setNoUserMsg] = useState("");
+    let isError = false;
+    let userExists = false;
+
+    useEffect(() => {
+        GetUser().then((data) => {
+            console.log("data receiving");
+            setUserData(data);
+        });
+    }, []);
 
     const loginButtonPressed = () => {
         console.log("Login button pressed");
-        props.navigation.navigate("HomeScreen")
+
+        if(email === ""){
+            console.log("Please enter email");
+            setEmailError("Please enter email");
+            isError = true;
+        } else {
+            setEmailError("");
+            isError = false;
+        }
+
+        if(password ===""){
+            console.log(("Please enter password"));
+            setPasswordError("Please enter password");
+            isError = true;
+        } else{
+            setPasswordError("");
+            isError = false;
+        }
+
+        
+        if(!isError){
+            setNoUserMsg("");
+            console.log("User data" , userData);
+            for(let item of userData) {
+                console.log("Email received");
+                console.log(item.email);
+                console.log("Password received");
+                console.log(item.password);
+                console.log("user password");
+                console.log(password);
+
+
+                if(email === item.email && password === item.password){
+                    console.log("user found", item.email ,email);
+                    userExists = true;
+                    break;
+                } 
+                else if(password != item.password){
+                    console.log("incorrect password");
+                    userExists = false;
+                }
+                else{
+                    console.log("User not found");
+                    userExists = false;
+                }
+            }
+           
+
+
+            if(userExists){
+                console.log("Email sending");
+                console.log(email);
+                setUser(email);
+                props.navigation.replace("HomeScreen", {userEmail: email});
+            } 
+            else  {
+                // setPasswordError("incorrect username/password");
+                setNoUserMsg("incorrect username/password");
+            }
+            
+            
+        }
+        
 
     }
 
     const signUpButtonPressed = () => {
         console.log("Sign up button pressed");
+        props.navigation.navigate("Register");
     }
 
-    const forgotPasswordButtonPressed = () => {
-        console.log("Forgot Password button pressed");
-    }
+    
     return(
         <View style={styles.container}>
             <Image source={require("./../assets/GoGeoCache_logo.png")} style={styles.logo}/>
@@ -23,12 +102,31 @@ const LoginScreen = (props) => {
             <Text style={styles.margin_space}>Sign In to Continue</Text>
             <View style={styles.flex_row}>
                 <View style={styles.flex_column}>
-                    <Text style={styles.margin_space}>Email:</Text>
-                    <Text style={styles.margin_space}>Password:</Text>
+                    <Text style={styles.margin_space_2}>Email:</Text>
+                    <Text style={styles.margin_space_2}>Password:</Text>
                 </View>
                 <View style={styles.flex_column}>
-                    <TextInput placeholder="Enter Email Id" style={styles.margin_space}/>
-                    <TextInput placeholder="Enter Password" style={styles.margin_space}/>
+                    <TextInput 
+                        placeholder="Enter Email Id"
+                        returnKeyType="done"
+                        textContentType="emailAddress"
+                        style={styles.margin_space}
+                        value={email}
+                        onChangeText={(data)=>{setEmail(data)}}
+                        autoCapitalize="none"
+                    />
+
+                    <Text style={styles.error}>{emailError}</Text>
+
+                    <TextInput 
+                        placeholder="Enter Password" 
+                        style={styles.margin_space}
+                        value={password}
+                        onChangeText={(data) => {setPassword(data)}}
+                        autoCapitalize="none"
+                    />
+
+                    <Text style={styles.error}>{passwordError}</Text>
                 </View>
             </View>
 
@@ -44,9 +142,9 @@ const LoginScreen = (props) => {
 
             </View>
 
-            <TouchableOpacity onPress={forgotPasswordButtonPressed}>
-                <Text style={styles.forgotPass}> Forgot Password? </Text>
-            </TouchableOpacity>
+          
+
+            <Text style={styles.error}>{noUserMsg}</Text>
 
         </View>
     );
@@ -56,6 +154,9 @@ const styles = StyleSheet.create({
     logo:{
         height:250,
         width:250
+    },
+    error:{
+        color:'red'
     },
     caption:{
         fontSize: 20,
@@ -70,6 +171,9 @@ const styles = StyleSheet.create({
     },
     margin_space:{
         margin:15
+    },
+    margin_space_2:{
+        margin:20
     },
     flex_column: {
         display: 'flex',

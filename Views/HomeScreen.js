@@ -1,23 +1,33 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, Alert, TouchableOpacity } from 'react-native';
+import { useEffect } from 'react';
 
 
 
-const HomeScreen = (props) => {
+
+const HomeScreen = ({navigation, route}) => {
+    console.log("Route", route, navigation)
+    const {userEmail} = route.params;
+
+    console.log("data receivedx");
+    console.log(userEmail);
+    useEffect(() => {
+        console.log(userEmail);
+    })
 
     const searchGeoPressed = () => {
         console.log("Login button pressed");
-        props.navigation.navigate("List Geo Cache")
+        navigation.navigate("List Geo Cache")
     }
 
     const addGeoPressed = () => {
         console.log("Add button pressed");
-        props.navigation.navigate("Add New Geo Cache")
+        navigation.navigate("Add New Geo Cache")
     }
 
     const favGeoPressed = () => {
         console.log("Fav button pressed");
-        props.navigation.navigate("Favorites")
+        navigation.navigate("Favorites")
     }
 
     return (

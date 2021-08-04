@@ -1,5 +1,6 @@
 import React , {useState, useEffect, useRef} from 'react';
-import { Text, View, Button, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, Button, Dimensions, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import {saveAsyncData, getAsyncData} from './../Services/AsyncStorageService';
 
 // location library imports
 import * as Location from "expo-location"
@@ -13,16 +14,53 @@ import { fetchCacheList } from "./../Services/FirebaseService";
 const ListGeoCacheScreen = () => {
     const [currRegion, setCurrRegion] = useState()
     const [buttomSheetIsOpen, setButtomSheetIsOpen] = useState(true)
-  
+    const [cacheStatus, setCacheStatus] = useState("");
+    const [note, setNote] = useState("");
+    const [notes, setNotes] = useState([]);
     // a variable to programitically access the MapView element
     const mapRef = useRef(null)
   
     // const mapMoved = (data) => {
     //   console.log(data)
-    //   // OPTIONAL: you can update the state variable and do something with the updated region info later
+    //   // OPTIONAL: you can update th e state variable and do something with the updated region info later
     //   setCurrRegion(data)
     // }
 
+    const startButtonPressed = (status) => {
+        console.log("Start progress button clicked", cacheDetails);
+        setCacheStatus("In Progress");
+        getAsyncData().then((data)=>{
+            let dataObj = data
+            if(!dataObj)
+                dataObj = {}
+            dataObj[status] = dataObj[status] ? dataObj[status] : []
+            if(dataObj[status].indexOf(cacheDetails.cacheName)==-1)
+                dataObj[status].push(cacheDetails.cacheName)
+            saveAsyncData(dataObj)
+            console.log("data from dataObj");
+            console.log(dataObj)
+        })
+    }
+
+    const addNotesButtonPressed  = () => {
+        console.log("Add note", note);
+        getAsyncData().then((data)=>{
+            let dataObj = data
+            if(!dataObj)
+                dataObj = {}
+            dataObj["notes"] = dataObj["notes"] ? dataObj["notes"] : []
+            dataObj["notes"].push({
+                cacheName: cacheDetails.cacheName,
+                note: note
+            })
+            console.log("dataObj", dataObj)
+            setNotes(dataObj["notes"].filter((data)=>{
+                return data.cacheName == cacheDetails.cacheName
+            }))
+            setNote("");
+            saveAsyncData(dataObj)
+        })
+    }
     const buttonPressed = () => {
         // 0. Request the user for permission to access their location
         Location.requestForegroundPermissionsAsync()
@@ -64,7 +102,7 @@ const ListGeoCacheScreen = () => {
           console.log(err)
     
           // update the UI to let the user know what happened
-          setMsg("Sorry, you must give us permission to access your location.")
+          //setMsg("Sorry, you must give us permission to access your location.")
         })
         
       }
@@ -74,7 +112,27 @@ const ListGeoCacheScreen = () => {
     const [cacheDetails, setCacheDetails] = useState();
     useEffect(()=>{
         fetchCacheList().then((data) => {
-            setCacheList(data)
+
+            let myArr = [... data]
+            getAsyncData().then((asyncData)=>{
+                let dataObj = asyncData
+                console.log("DataObj",dataObj)
+                if(!dataObj)
+                    dataObj = {}
+                for(let i=0; i< myArr.length; i++) {
+                    if(dataObj["complete"] && dataObj["complete"].indexOf(myArr[i].cacheName)!=-1)
+                        myArr[i].cacheStatus = "Complete"
+                    else if(dataObj["progress"] && dataObj["progress"].indexOf(myArr[i].cacheName)!=-1)
+                        myArr[i].cacheStatus = "In Progress"
+                    else
+                        myArr[i].cacheStatus = ""
+                }
+                setCacheList(myArr)
+                console.log("Data maitri");
+                console.log(myArr);
+            })
+            
+            
         })
         buttonPressed()
     }, [])
@@ -128,19 +186,18 @@ const ListGeoCacheScreen = () => {
                         <View key={`${index}`} style={styles.listItem}>
                             <TouchableOpacity onPress={()=> {
                                 console.log(_)
-                                const coordinates = {
-                                    latitude: _.latitude,
-                                    longitude: _.longitude,
-                                    latitudeDelta: 0.900,
-                                    longitudeDelta:0.900
-                                }
-                                mapRef.current.animateCamera(coordinates, 2000);
-                                mapRef.current.animateToRegion(coordinates, 2000)
-                                console.log("HK ", coordinates)
-                                // mapRef.current.animateCamera(
-                                //     {center:coordinates}, 2000
-                                // )
-                                setCurrRegion(coordinates)
+                                getAsyncData().then((data)=>{
+                                    let dataObj = data
+                                    if(!dataObj)
+                                        dataObj = {}
+                                    dataObj["notes"] = dataObj["notes"] ? dataObj["notes"] : []
+                                    setNotes(dataObj["notes"].filter((data)=>{
+                                        return data.cacheName == _.cacheName
+                                    }))
+                                    console.log("notes",dataObj["notes"])
+                                    
+                                })
+                                
                                 setCacheDetails(_);
                             }}>
                                 <Text  style={styles.listText}>{`${_.cacheName}`}</Text>
@@ -149,8 +206,9 @@ const ListGeoCacheScreen = () => {
                                 <TouchableOpacity>
                                     <Text>Fav</Text>
                                 </TouchableOpacity>
-                                <View style={[styles.badge, styles.progressBadge]}>
-                                    <Text style={styles.whiteText}>In-Progress</Text>
+                                
+                                <View style={[styles.badge, _.cacheStatus === "In Progress" ? styles.progressBadge: (_.cacheStatus === "Complete" ? styles.completeBadge : {}) ]}>
+                                    <Text style={styles.whiteText}>{_.cacheStatus}</Text>
                                 </View>
                             </View>
                             
@@ -171,13 +229,30 @@ const ListGeoCacheScreen = () => {
             </View>
             <Text style={styles.detailsDetails}>{cacheDetails.description}</Text>
             <Text style={styles.detailsLatLng}>Latitude: {cacheDetails.latitude}, Longitude: {cacheDetails.longitude}</Text>
+            
+            {notes.map((noteObj, index)=>{
+                return <Text  key={index}>{noteObj.note}</Text>
+            })}
+            <Text>Add Notes:</Text>
+            <View style={styles.detailsTitleBar}>
+                <TextInput placeholder="Enter your notes about cache" value={note}
+                onChangeText={(data)=>{setNote(data)}}></TextInput>
+                <TouchableOpacity style={[styles.completeBadge, styles.badge]} onPress={addNotesButtonPressed}>
+                    <Text style={styles.whiteText}>Add</Text>
+                </TouchableOpacity>
+            </View>
+            
             <View style={styles.detailsButtons}>
                 <TouchableOpacity style={styles.detailsButton}>
                     <Text style={styles.whiteText}>Add to favourite</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.detailsButton}>
+                {cacheDetails.cacheStatus == "" && <TouchableOpacity style={styles.detailsButton} onPress={()=>{startButtonPressed("progress")}}>
                     <Text style={styles.whiteText}>Start Progress</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>}
+                {cacheDetails.cacheStatus == "In Progress" && <TouchableOpacity style={styles.detailsButton} onPress={()=>{startButtonPressed("complete")}}>
+                    <Text style={styles.whiteText}>complete</Text>
+                </TouchableOpacity>}
+                {cacheDetails.cacheStatus == "Complete" && <Text>Completed</Text>}
             </View>
         </View>}
       </BottomSheet>
@@ -188,7 +263,7 @@ const ListGeoCacheScreen = () => {
   }
 
   const styles = {
-    detailsTitleBar: {
+   detailsTitleBar: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -222,6 +297,9 @@ const ListGeoCacheScreen = () => {
         borderRadius: 3,
     },
     progressBadge: {
+        backgroundColor: "yellow",
+    },
+    completeBadge:{
         backgroundColor: "rgb(30, 138, 93)",
     },
     whiteText: {
