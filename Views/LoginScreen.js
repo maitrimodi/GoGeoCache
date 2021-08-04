@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import { GetUser } from "./../Services/FirebaseService";
 import {setUser} from "./../Services/AsyncStorageService"
 const LoginScreen = (props) => {

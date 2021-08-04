@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
 
 
@@ -24,22 +24,17 @@ const HomeScreen = ({navigation, route}) => {
         console.log("Add button pressed");
         navigation.navigate("Add New Geo Cache")
     }
-
-    const favGeoPressed = () => {
-        console.log("Fav button pressed");
-        navigation.navigate("Favorites")
-    }
-
     return (
         <View style={styles.container}>
 
             <TouchableOpacity onPress={searchGeoPressed}>
-                <Image source={require("./../assets/search.png")} style={styles.logo}/>
+                <Image source={require("./../assets/search.png")} style={styles.search}/>
+                <Text style={styles.title}>Search for geocaches near you</Text>
             </TouchableOpacity>
-            <Text style={styles.title}>Search for geocaches near you</Text>
+            
 
             <TouchableOpacity onPress={addGeoPressed}>
-                <Image source={require("./../assets/addGeoCache.png")} style={styles.logo}/>
+                <Image source={require("./../assets/addGeoCache.png")} style={styles.add} />
             </TouchableOpacity>
             <Text style={styles.title}>Add a New Cache</Text>
         </View>
@@ -51,17 +46,26 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
-    logo: {
-        height: 180,
+    search: {
+        height: 200,
         width: 280,
-        alignContent: 'center'
+        alignContent: 'center',
+        paddingBottom: 20,
+    },
+    add: {
+        height: 240,
+        width: 280,
+        alignContent: 'center',
+        paddingBottom: 20
     },
     title:{
         color: 'green',
         fontSize: 20,
-        paddingBottom: 5
+        paddingBottom: 5,
+        marginTop: 10,
+        marginBottom: 20
     }
 });
 

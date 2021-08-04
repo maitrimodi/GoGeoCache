@@ -1,5 +1,5 @@
 import React , {useState, useEffect, useRef} from 'react';
-import { Text, View, Button, Dimensions, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { Text, View, Dimensions, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import {saveAsyncData, getAsyncData} from './../Services/AsyncStorageService';
 
 // location library imports
