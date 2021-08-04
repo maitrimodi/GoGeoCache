@@ -34,7 +34,7 @@ const ListGeoCacheScreen = () => {
                 dataObj[status].push(cacheDetails.cacheName)
             saveAsyncData(dataObj)
             console.log("data from dataObj");
-            console.log(dataObj)
+            console.log(dataObj);
         })
     }
 
@@ -44,17 +44,17 @@ const ListGeoCacheScreen = () => {
             let dataObj = data
             if(!dataObj)
                 dataObj = {}
-            dataObj["notes"] = dataObj["notes"] ? dataObj["notes"] : []
+            dataObj["notes"] = dataObj["notes"] ? dataObj["notes"] : [];
             dataObj["notes"].push({
                 cacheName: cacheDetails.cacheName,
                 note: note
             })
-            console.log("dataObj", dataObj)
+            console.log("dataObj", dataObj);
             setNotes(dataObj["notes"].filter((data)=>{
                 return data.cacheName == cacheDetails.cacheName
             }))
             setNote("");
-            saveAsyncData(dataObj)
+            saveAsyncData(dataObj);
         })
     }
     const buttonPressed = () => {
@@ -127,8 +127,6 @@ const ListGeoCacheScreen = () => {
                 console.log("Data maitri");
                 console.log(myArr);
             })
-            
-            
         })
         buttonPressed()
     }, [])
@@ -186,7 +184,7 @@ const ListGeoCacheScreen = () => {
                                 </TouchableOpacity>
                                 
                                 <View style={[styles.badge, _.cacheStatus === "In Progress" ? styles.progressBadge: (_.cacheStatus === "Complete" ? styles.completeBadge : {}) ]}>
-                                    <Text style={styles.whiteText}>{_.cacheStatus}</Text>
+                                    <Text style={[_.cacheStatus === "In Progress" ? styles.blackText : (_.cacheStatus === "Complete" ? styles.whiteText : {})]}>{_.cacheStatus}</Text>
                                 </View>
                             </View>
                             
@@ -224,6 +222,9 @@ const ListGeoCacheScreen = () => {
                 <TouchableOpacity style={styles.detailsButton} onPress={favButtonPressed}>
                     <Text style={styles.whiteText}>Add to favourite</Text>
                 </TouchableOpacity>
+                {
+                    console.log(cacheDetails.cacheStatus)
+                }
                 {cacheDetails.cacheStatus == "" && <TouchableOpacity style={styles.detailsButton} onPress={()=>{startButtonPressed("progress")}}>
                     <Text style={styles.whiteText}>Start Progress</Text>
                 </TouchableOpacity>}
@@ -274,13 +275,16 @@ const ListGeoCacheScreen = () => {
         borderRadius: 3,
     },
     progressBadge: {
-        backgroundColor: "yellow",
+        backgroundColor: "yellow"
     },
     completeBadge:{
-        backgroundColor: "rgb(30, 138, 93)",
+        backgroundColor: "rgb(30, 138, 93)"
     },
     whiteText: {
         color: "white"
+    },
+    blackText:{
+        color:"black"
     },
     rightContainer: {
         display: "flex",
