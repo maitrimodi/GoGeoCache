@@ -1,5 +1,5 @@
 import React , {useState, useEffect, useRef} from 'react';
-import { Text, View, Dimensions, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { Text, View, Button, Dimensions, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import {saveAsyncData, getAsyncData} from './../Services/AsyncStorageService';
 
 // location library imports
@@ -57,6 +57,8 @@ const ListGeoCacheScreen = () => {
                 }
                 
                 setCacheDetails(tempObj)
+
+                // to update the UI OF LIST
                 updateCacheList(cacheList)
             })
             console.log("data from dataObj");
@@ -64,7 +66,23 @@ const ListGeoCacheScreen = () => {
         })
     }
 
-
+    /**
+     *  "maitri@gmail.com": {
+        *   //status : // values
+        *   complete: ["Star Bazar", "New york"],
+        *   progress: ["Star India Bazar"],
+        *   favourite: ["Star India Bazar", "New York"],
+        *   notes: [
+        *       {
+        *           cacheName: "New York",
+        *           note: "Hello World!"
+        *       },{
+        *           cacheName: "New York",
+        *           note: "Undet the tree!"
+        *       }
+        *   ]
+        * }
+     */
     const addNotesButtonPressed  = () => {
         console.log("Add note", note);
         getAsyncData().then((data)=>{
